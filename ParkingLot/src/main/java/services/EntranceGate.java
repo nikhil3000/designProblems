@@ -15,8 +15,8 @@ public class EntranceGate {
     private final ParkingSpotManagerFactory parkingSpotManagerFactory;
     private final TicketsDao ticketsDao;
 
-    public EntranceGate(UUID id, ParkingSpotManagerFactory parkingSpotManagerFactory, TicketsDao ticketsDao) {
-        this.id = id;
+    public EntranceGate(ParkingSpotManagerFactory parkingSpotManagerFactory, TicketsDao ticketsDao) {
+        this.id = UUID.randomUUID();
         this.parkingSpotManagerFactory = parkingSpotManagerFactory;
         this.ticketsDao = ticketsDao;
     }
@@ -26,11 +26,13 @@ public class EntranceGate {
         Optional<ParkingSpot> parkingSpot = parkingSpotManager.findNearestSpot();
         if(parkingSpot.isEmpty()){
             // TODO: Create a dedicated Exception class
-            throw new RuntimeException("Available Parking spot not found. Ticket can't be created");
+            System.out.printf("Can't park %s", vehicle.toString());
+            throw new RuntimeException("Available Parking spot not found Ticket can't be created");
         }
         parkingSpot.get().parkVehicle(vehicle);
-        Ticket ticket = new Ticket(parkingSpot.get());
+        Ticket ticket = new Ticket(parkingSpot.get(), vehicle);
         ticketsDao.addNewTicket(ticket);
+        System.out.printf("Parked Vehicle with id %s %n", vehicle.toString());
         return ticket;
     }
 }

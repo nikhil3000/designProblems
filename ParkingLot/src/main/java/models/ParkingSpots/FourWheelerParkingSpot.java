@@ -5,12 +5,12 @@ import models.VehicleType;
 
 public class FourWheelerParkingSpot extends ParkingSpot {
 
-    public FourWheelerParkingSpot(Vehicle vehicle, boolean available) {
-        super(vehicle, available, VehicleType.FOUR_WHEELER, 20);
+    public FourWheelerParkingSpot() {
+        super(true, VehicleType.FOUR_WHEELER, 20);
     }
 
     public int getPrice() {
         System.out.println("Getting price from FourWheelerParkingSpot");
-        return this.getPrice() + 10;
+        return super.getPrice() + 10;
     }
 }

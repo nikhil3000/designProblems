@@ -6,14 +6,18 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class Ticket {
-    private final UUID Id;
+    private final UUID id;
     private final ZonedDateTime entryTime;
+    private ZonedDateTime exitTime;
     private final ParkingSpot assignedParkingSpot;
+    private final Vehicle vehicle;
 
-    public Ticket(ParkingSpot assignedParkingSpot) {
-        Id = UUID.randomUUID();
+    public Ticket(ParkingSpot assignedParkingSpot, Vehicle vehicle) {
+        id = UUID.randomUUID();
         this.assignedParkingSpot = assignedParkingSpot;
         this.entryTime = ZonedDateTime.now();
+
+        this.vehicle = vehicle;
     }
 
     public ZonedDateTime getEntryTime() {
@@ -25,6 +29,18 @@ public class Ticket {
     }
 
     public UUID getId() {
-        return Id;
+        return id;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void markTicketExit() {
+        this.exitTime = ZonedDateTime.now();
+    }
+
+    public ZonedDateTime getExitTime() {
+        return exitTime;
     }
 }

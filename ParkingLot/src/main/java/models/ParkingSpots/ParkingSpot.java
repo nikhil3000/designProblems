@@ -6,24 +6,24 @@ import models.VehicleType;
 import java.util.UUID;
 
 public abstract class ParkingSpot {
-    private UUID id;
+    private final UUID id;
     private Vehicle vehicle;
     private boolean available;
-    private VehicleType vehicleType;
-    private int price;
+    private final VehicleType vehicleType;
+    private final int price;
 
     public void parkVehicle(Vehicle vehicle) {
         this.setVehicle(vehicle);
-        this.setAvailable(true);
+        this.setAvailable(false);
     }
     public void removeVehicle() {
         this.setVehicle(null);
-        this.setAvailable(false);
+        this.setAvailable(true);
     }
 
-    public ParkingSpot(Vehicle vehicle, boolean available, VehicleType vehicleType, int price){
+    public ParkingSpot(boolean available, VehicleType vehicleType, int price){
+        this.id = UUID.randomUUID();
         this.available = available;
-        this.vehicle = vehicle;
         this.vehicleType = vehicleType;
         this.price = price;
     }
@@ -56,7 +56,4 @@ public abstract class ParkingSpot {
         return id;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
 }

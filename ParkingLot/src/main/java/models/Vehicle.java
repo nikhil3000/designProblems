@@ -24,4 +24,9 @@ public class Vehicle {
         this.regNo = regNo;
         this.vehicleType = vehicleType;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Vehicle Id: %s, Reg no.: %s, type: %s", this.id, this.regNo, this.vehicleType);
+    }
 }
