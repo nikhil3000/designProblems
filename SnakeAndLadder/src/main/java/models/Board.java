@@ -1,8 +1,8 @@
 package models;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.lang3.RandomUtils;
+
+import java.util.*;
 import java.util.logging.Logger;
 
 public class Board {
@@ -22,15 +22,33 @@ public class Board {
         return boardSize;
     }
 
-    public Board(int rowCount, int columnCount, List<Jump> snakes, List<Jump> ladders) {
-        int squareCount = rowCount * columnCount;
-        if(snakes.stream().anyMatch(snake -> snake.getEnd() > squareCount || snake.getStart() > squareCount)
-                || ladders.stream().anyMatch(ladder -> ladder.getEnd() > squareCount || ladder.getStart() > squareCount)) {
-            throw new RuntimeException("Snakes and ladders should be within the board");
+    public Board(int rowCount, int columnCount, int snakeCount, int ladderCount) {
+        this.boardSize = rowCount * columnCount;
+        Set<Integer> visitedSquares = new HashSet<>();
+
+        while(this.snakes.size() < snakeCount){
+            int end = RandomUtils.nextInt(1, rowCount * columnCount - 1);
+            int start = RandomUtils.nextInt(end + 1, rowCount * columnCount);
+
+            if(visitedSquares.contains(start) || visitedSquares.contains(end)) {
+                continue;
+            }
+            visitedSquares.add(start);
+            visitedSquares.add(end);
+            this.snakes.put(start, new Jump(start, end));
         }
-        this.boardSize = squareCount;
-        snakes.forEach(snake -> this.snakes.put(snake.getStart(), snake));
-        ladders.forEach(ladder -> this.ladders.put(ladder.getStart(), ladder));
+
+        while(this.ladders.size() < ladderCount){
+            int start = RandomUtils.nextInt(1, rowCount * columnCount - 1);
+            int end = RandomUtils.nextInt(start + 1, rowCount * columnCount);
+            if(visitedSquares.contains(start) || visitedSquares.contains(end)) {
+                continue;
+            }
+            visitedSquares.add(start);
+            visitedSquares.add(end);
+            this.ladders.put(start, new Jump(start, end));
+        }
+
         Logger.getLogger("Board").info(snakes.toString());
         Logger.getLogger("Board").info(ladders.toString());
     }

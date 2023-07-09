@@ -5,15 +5,21 @@ import java.util.UUID;
 public class Player {
     private final UUID id;
     private int position;
-    private boolean winner;
 
 
     public Player() {
         id = UUID.randomUUID();
         this.position = 0;
-        this.winner = false;
     }
 
+    public int rollDice(Dice dice, int diceCount) {
+        int i = 0;
+        int totalSteps = 0;
+        while (i++ < diceCount) {
+            totalSteps += dice.rollDice();
+        }
+        return totalSteps;
+    }
 
     public UUID getId() {
         return id;
@@ -21,14 +27,6 @@ public class Player {
 
     public int getPosition() {
         return position;
-    }
-
-    public boolean isWinner() {
-        return winner;
-    }
-
-    public void setWinner(boolean winner) {
-        this.winner = winner;
     }
 
     public void setPosition(int position) {

@@ -2,22 +2,27 @@ package services;
 
 import models.Board;
 import models.Dice;
-import models.Jump;
+import models.Move;
 import models.Player;
+import services.GamePlayingStrategy.GamePlayingStrategy;
 
 import java.util.*;
-import java.util.logging.Logger;
 
-import org.apache.commons.lang3.RandomUtils;
+public class Game {
 
-
-public abstract class Game {
-    public UUID getId() {
-        return id;
-    }
 
     private final UUID id;
     private final Dice dice;
+    private final Board board;
+    private final int diceCount;
+    private final Queue<Player> players = new LinkedList<>();
+    private final Stack<Move> moves = new Stack<>();
+    private Player winner;
+    private final GamePlayingStrategy gamePlayingStrategy;
+
+    public UUID getId() {
+        return id;
+    }
 
     public Dice getDice() {
         return dice;
@@ -31,68 +36,40 @@ public abstract class Game {
         return diceCount;
     }
 
-    private final Board board;
-    private final int diceCount;
-    private final Queue<Player> players = new LinkedList<>();
-    Logger logger = Logger.getLogger("Game");
+    public Player getWinner() {
+        return winner;
+    }
 
 
-    public Game(int diceCount, int snakeCount, int ladderCount, int playerCount) {
+    public Game(int diceCount, int snakeCount, int ladderCount, int playerCount, GamePlayingStrategy gamePlayingStrategy) {
         // We can parameterize the row and column count if needed.
         int rowCount = 10;
         int columnCount = 10;
-        Set<Integer> visitedSquares = new HashSet<>();
-        List<Jump> snakes = new ArrayList<>();
-        List<Jump> ladders = new ArrayList<>();
 
-        while(snakes.size() < snakeCount){
-            int end = RandomUtils.nextInt(1, rowCount * columnCount - 1);
-            int start = RandomUtils.nextInt(end + 1, rowCount * columnCount);
-
-            if(visitedSquares.contains(start) || visitedSquares.contains(end)) {
-                continue;
-            }
-            visitedSquares.add(start);
-            visitedSquares.add(end);
-            snakes.add(new Jump(start, end));
-        }
-
-        while(ladders.size() < ladderCount){
-            int start = RandomUtils.nextInt(1, rowCount * columnCount - 1);
-            int end = RandomUtils.nextInt(start + 1, rowCount * columnCount);
-            if(visitedSquares.contains(start) || visitedSquares.contains(end)) {
-                continue;
-            }
-            visitedSquares.add(start);
-            visitedSquares.add(end);
-            ladders.add(new Jump(start, end));
-        }
-
-       Board board = new Board(rowCount, columnCount, snakes, ladders);
         while (players.size() < playerCount) {
             players.add(new Player());
         }
         this.id = UUID.randomUUID();
         this.dice = new Dice(6);
-        this.board = board;
+        this.board = new Board(rowCount, columnCount, snakeCount, ladderCount);
         this.diceCount = diceCount;
+        this.gamePlayingStrategy = gamePlayingStrategy;
     }
 
-    public abstract Player makeMove(Player player);
 
     public Player playGame() {
-        Player winner = null;
         while(true) {
-            Player player = makeMove(players.poll());
+            Player player = players.poll();
+            Move move =  gamePlayingStrategy.makeMove(player.rollDice(dice, getDiceCount()), board, player);
             players.add(player);
+            moves.add(move);
 
             if(player.getPosition() >= board.getBoardSize()){
-                player.setWinner(true);
-                winner = player;
+                this.winner = player;
                 break;
             }
 
         }
-        return winner;
+        return this.winner;
     }
 }
